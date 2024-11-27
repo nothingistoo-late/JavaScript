@@ -1,4 +1,5 @@
 var string = "Hoang Chi Trung";
 var num = 10;
-alert(string);
-alert(num);
+prompt(string);
+
+setTimeout(function() {alert(string);}, 100);
