@@ -90,3 +90,14 @@
 
 // console.log(user.className )
 // console.log(user2)
+//34
+// var date = new Date();
+
+// var day = date.getDate()
+// var month = date.getMonth()
+// var year = date.getFullYear()
+
+// console.log('Current date:',day + '/' + (month + 1) + '/' + year)
+// console.log(date.getHours())
+// console.log(date.getMinutes())
+// console.log(date.getSeconds())
