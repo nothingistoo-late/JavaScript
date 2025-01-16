@@ -75,3 +75,18 @@
 
 // delete myInfor.age
 // console.log(myInfor.getname())
+//33. Object Prototype in javascript
+// function User(firstName, lastName, avatar){
+//     this.firstName = firstName;
+//     this.lastName = lastName;
+//     this.avatar = avatar;
+//     this.getFullName = function(){
+//         return this.firstName + " " + this.lastName;
+//     }
+// }
+// User.prototype.className = "FSA";
+// var user = new User('Trung', 'Chi', 'Avatar1!!');
+// var user2 = new User('Phuc', 'Tien', 'Avatar2!!')
+
+// console.log(user.className )
+// console.log(user2)
