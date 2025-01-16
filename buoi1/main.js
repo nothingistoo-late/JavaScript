@@ -134,3 +134,16 @@
 //     console.log(value)
 
 // chú ý object.values hoặc object.keys 
+
+/*
+49. làm việc với array method
+
+forEach()
+every()
+some()
+find()
+filter()
+map()
+reduce() 
+
+*/ 
