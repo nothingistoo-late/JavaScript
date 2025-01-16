@@ -101,3 +101,36 @@
 // console.log(date.getHours())
 // console.log(date.getMinutes())
 // console.log(date.getSeconds())
+//ctr+d để bôi đen đoạn codecode
+
+//35. câu lệnh rẽ nhánh if else
+//DỄ QUÁ éo học 
+
+//36. câu lệnh rẽ nhánh switch case
+// cũng dễ quá éo code
+//37 toán tử 3 ngôi
+// cũng dễ vloz, éo học
+//38 vòng lặp
+/*
+1. for - vòng lặp với điều kiện đúng
+2. for/in - vòng lặp qua key của đối phương
+3. for/of lặp qua value của đối phương
+4. while - vòng lặp cho đến khi điều kiện đúng
+5. do/while - vòng lặp cho đến khi điều kiện đúng, rồi mới thực hiện đoạn code trong vòng lặp
+
+*/
+
+//for/of
+// var myInfor = {
+//     name: "Hoang Chi Trung",
+//     age: 20,
+//     school: "FPT University",
+// }
+
+// for (var value of Object.keys(myInfor))
+//     console.log(value)
+
+// for (var value of Object.values(myInfor))
+//     console.log(value)
+
+// chú ý object.values hoặc object.keys 
