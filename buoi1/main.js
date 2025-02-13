@@ -138,12 +138,55 @@
 /*
 49. làm việc với array method
 
-forEach()
-every()
-some()
+forEach() duyệt qua tất cả các phần tử
+
+every() kiểm tra xem tất cả các phần tử có đáp ứng 1 điều kiện nào đó hay không, trả về true false
+vd kiem tra xem tat ca co free hay khong :
+
+var isFree = Courses.every(function (Course, index) {
+    return Course.coin != 0
+});
+console.log(isFree)
+
+
+some() kiểm tra xem có 1 phần tử thỏa mãn điều kiện hay không, trả về true false
 find()
 filter()
 map()
 reduce() 
 
-*/ 
+*/
+
+var Courses = [
+    {
+        id: 1,
+        name: "C#",
+        coin: 10
+    },
+    {
+        id: 2,
+        name: "JavaScript",
+        coin: 0
+    },
+    {
+        id: 3,
+        name: "Java",
+        coin: 20
+    },
+    {
+        id: 4,
+        name: "NodeJS",
+        coin: 5
+    }
+    , {
+        id: 5,
+        name: "C++",
+        coin: 12
+    }
+]
+
+var isFree = Courses.every(function (Course, index) {
+    return Course.coin != 0
+});
+
+console.log(isFree)
