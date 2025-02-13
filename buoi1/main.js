@@ -150,9 +150,9 @@ console.log(isFree)
 
 
 some() kiểm tra xem có 1 phần tử thỏa mãn điều kiện hay không, trả về true false
-find()
-filter()
-map()
+find() tìm kiếm phần tử đầu tiên thỏa mãn điều kiện, trả về phần tử đó, không có thì trả undefine
+filter() giống find nhưng mà trả về tất cả các phần tử thỏa mãn điều kiện
+map() thêm, xóa, sửa phần tử 
 reduce() 
 
 */
