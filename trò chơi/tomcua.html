@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bầu Cua Tôm Cá</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; background-color: #f5f5f5; }
+        h1 { font-size: 32px; margin-bottom: 10px; }
+        .balance-container { display: flex; justify-content: center; gap: 30px; font-size: 20px; margin-bottom: 15px; }
+        .dice-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
+        .dice { font-size: 40px; width: 80px; height: 80px; line-height: 80px; text-align: center; border: 3px solid black; background: white; border-radius: 10px; box-shadow: 2px 2px 5px gray; }
+        .bet-container { display: grid; grid-template-columns: repeat(3, 140px); gap: 15px; justify-content: center; margin-bottom: 20px; }
+        .bet { width: 140px; height: 140px; text-align: center; font-size: 22px; font-weight: bold; border: 3px solid black; border-radius: 10px; cursor: pointer; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: transform 0.2s; background: white; box-shadow: 3px 3px 6px gray; }
+        .bet:hover { transform: scale(1.05); }
+        .bet span { font-size: 16px; position: absolute; bottom: 5px; font-weight: normal; }
+        button { font-size: 22px; padding: 12px 24px; cursor: pointer; background-color: #ff6600; color: white; border: none; border-radius: 10px; box-shadow: 2px 2px 5px gray; transition: background 0.2s, transform 0.1s; }
+        button:hover { background-color: #cc5500; transform: scale(1.05); }
+        .victory { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); color: gold; font-size: 50px; font-weight: bold; align-items: center; justify-content: center; flex-direction: column; }
+    </style>
+</head>
+<body>
+    <h1>🎲 Bầu Cua Tôm Cá 🎲</h1>
+    <div class="balance-container">
+        <div>💰 Tiền của bạn: <span id="playerMoney">100000</span>đ</div>
+        <div>🏦 Tiền nhà cái: <span id="bankerMoney">500000</span>đ</div>
+    </div>
+    <div class="dice-container">
+        <div class="dice" id="dice1">❓</div>
+        <div class="dice" id="dice2">❓</div>
+        <div class="dice" id="dice3">❓</div>
+    </div>
+    <div class="bet-container">
+        <div class="bet" id="Cua">🦀 Cua <span>0đ</span></div>
+        <div class="bet" id="Tôm">🦐 Tôm <span>0đ</span></div>
+        <div class="bet" id="Cá">🐟 Cá <span>0đ</span></div>
+        <div class="bet" id="Bầu">🍐 Bầu <span>0đ</span></div>
+        <div class="bet" id="Gà">🐓 Gà <span>0đ</span></div>
+        <div class="bet" id="Nai">🦌 Nai <span>0đ</span></div>
+    </div>
+    <button id="rollButton">🎲 Lắc!</button>
+    <div class="victory" id="victoryScreen">🎉 Bạn đã đánh bại nhà cái! 🎉</div>
+    <script>
+        let diceFaces = ["🦀", "🦐", "🐟", "🍐", "🐓", "🦌"];
+        let bets = { "Cua": 0, "Tôm": 0, "Cá": 0, "Bầu": 0, "Gà": 0, "Nai": 0 };
+        let playerMoney = 100000;
+        let bankerMoney = 500000;
+
+        document.querySelectorAll(".bet").forEach(el => {
+            el.addEventListener("click", () => {
+                let animal = el.id;
+                if (playerMoney >= 10000) {
+                    bets[animal] += 10000;
+                    playerMoney -= 10000;
+                    updateUI();
+                }
+            });
+        });
+
+        document.getElementById("rollButton").addEventListener("click", function() {
+            let results = [
+                diceFaces[Math.floor(Math.random() * diceFaces.length)],
+                diceFaces[Math.floor(Math.random() * diceFaces.length)],
+                diceFaces[Math.floor(Math.random() * diceFaces.length)]
+            ];
+            document.getElementById("dice1").innerText = results[0];
+            document.getElementById("dice2").innerText = results[1];
+            document.getElementById("dice3").innerText = results[2];
+            calculateWinnings(results);
+        });
+
+        function calculateWinnings(results) {
+            let winnings = 0;
+            results.forEach(face => {
+                for (let key in bets) {
+                    if (face === getAnimalEmoji(key)) {
+                        winnings += bets[key] * 2;
+                    }
+                }
+            });
+            playerMoney += winnings;
+            bankerMoney -= winnings;
+            alert(`Bạn ${winnings > 0 ? "thắng" : "thua"} ${winnings}đ!`);
+            resetBets();
+            checkVictory();
+        }
+
+        function resetBets() {
+            for (let key in bets) {
+                bets[key] = 0;
+            }
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById("playerMoney").innerText = playerMoney;
+            document.getElementById("bankerMoney").innerText = bankerMoney;
+            for (let key in bets) {
+                document.getElementById(key).querySelector("span").innerText = bets[key] + "đ";
+            }
+        }
+
+        function getAnimalEmoji(name) {
+            return { "Cua": "🦀", "Tôm": "🦐", "Cá": "🐟", "Bầu": "🍐", "Gà": "🐓", "Nai": "🦌" }[name];
+        }
+
+        function checkVictory() {
+            if (bankerMoney <= 0) {
+                document.getElementById("victoryScreen").style.display = "flex";
+            }
+        }
+    </script>
+</body>
+</html>

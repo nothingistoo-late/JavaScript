@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bốc Túi Mù</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .rare {
+            color: red;
+            font-size: 20px;
+            animation: glow 1s infinite alternate;
+        }
+        @keyframes glow {
+            from { text-shadow: 0 0 5px red; }
+            to { text-shadow: 0 0 20px gold; }
+        }
+        .bag {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px;
+        }
+        .bag-image {
+            width: 100px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bốc Túi Mù</h1>
+        <label for="quantity">Số lượng túi muốn mở:</label>
+        <input type="number" id="quantity" value="1" min="1" max="100">
+        <button onclick="unbox()">Unbox</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const bags = {
+            "Secret": "https://mohopi.com/wp-content/uploads/2024/10/z5946838240674_921801256efb69a3e47c7a61f6517d52.jpg",
+            "Premium": "https://www.fahasa.com/blog/wp-content/uploads/2024/12/baby-three-400-big-plush-animal-16.webp",
+            "400%": "https://sieuthidaisymart.com/wp-content/uploads/2024/12/blindbox-tui-mu-Baby-Three-400-7.jpg",
+            "VIP": "https://bizweb.dktcdn.net/thumb/1024x1024/100/427/145/products/baby-three-lucky-cat-blindbox-13.jpg?v=1732003952380",
+            "Superior": "https://bizweb.dktcdn.net/thumb/1024x1024/100/427/145/products/baby-three-v3-zodiac-12-con-giap-4-2b5b2a52-e47e-479a-8b6d-10a2bf1182a9.jpg?v=1729822096010",
+            "Thường": "https://sieuthidaisymart.com/wp-content/uploads/2024/11/Tui-mu-Baby-Three-dau-to-Baby-Three-Big-head-8.jpg"
+        };
+        
+        let bagList = [];
+        bagList.push("Secret");
+        bagList.push("Premium", "Premium");
+        bagList.push(...Array(5).fill("400%"));
+        bagList.push(...Array(20).fill("VIP"));
+        bagList.push(...Array(50).fill("Superior"));
+        while (bagList.length < 200) bagList.push("Thường");
+
+        function unbox() {
+            let quantity = parseInt(document.getElementById("quantity").value);
+            let resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = "";
+            
+            let selectedBags = [];
+            for (let i = 0; i < quantity; i++) {
+                let pickedBag = bagList[Math.floor(Math.random() * bagList.length)];
+                selectedBags.push(pickedBag);
+            }
+
+            selectedBags.sort((a, b) => (a === "Thường" ? 1 : -1));
+            
+            selectedBags.forEach(pickedBag => {
+                let bagClass = (pickedBag !== "Thường") ? "rare" : "";
+                let bagImage = `<img src="${bags[pickedBag]}" class="bag-image">`;
+                let bagElement = `<div class='bag ${bagClass}'><p>${pickedBag}</p>${bagImage}</div>`;
+                resultDiv.innerHTML += bagElement;
+            });
+        }
+    </script>
+</body>
+</html>
