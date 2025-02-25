@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jenga Online</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .tower {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .block {
+            width: 120px;
+            height: 30px;
+            background-color: #c97c5d;
+            margin: 3px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: transform 0.3s ease-in-out;
+        }
+        .block:hover {
+            background-color: #a8644f;
+        }
+    </style>
+</head>
+<body>
+    <h1>Jenga Online</h1>
+    <p>Nhấp vào khối gỗ để rút ra, đừng để tháp sập!</p>
+    <div class="tower" id="tower"></div>
+    <script>
+        const tower = document.getElementById("tower");
+        let blocks = [];
+
+        function buildTower() {
+            tower.innerHTML = "";
+            blocks = [];
+            for (let i = 0; i < 15; i++) {
+                let block = document.createElement("div");
+                block.classList.add("block");
+                block.dataset.index = i;
+                block.onclick = removeBlock;
+                tower.prepend(block);
+                blocks.push(block);
+            }
+        }
+
+        function removeBlock(event) {
+            let index = event.target.dataset.index;
+            event.target.style.transform = "translateX(-200px)";
+            setTimeout(() => {
+                event.target.remove();
+                checkGameOver();
+            }, 300);
+        }
+
+        function checkGameOver() {
+            if (tower.children.length < Math.random()*15) {
+                alert("Tháp đã sập! Bạn thua!");
+                buildTower();
+            }
+        }
+
+        buildTower();
+    </script>
+</body>
+</html>
