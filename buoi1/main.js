@@ -157,36 +157,60 @@ reduce()
 
 */
 
-var Courses = [
-    {
-        id: 1,
-        name: "C#",
-        coin: 10
-    },
-    {
-        id: 2,
-        name: "JavaScript",
-        coin: 0
-    },
-    {
-        id: 3,
-        name: "Java",
-        coin: 20
-    },
-    {
-        id: 4,
-        name: "NodeJS",
-        coin: 5
-    }
-    , {
-        id: 5,
-        name: "C++",
-        coin: 12
-    }
-]
+// var Courses = [
+//     {
+//         id: 1,
+//         name: "C#",
+//         coin: 10
+//     },
+//     {
+//         id: 2,
+//         name: "JavaScript",
+//         coin: 0
+//     },
+//     {
+//         id: 3,
+//         name: "Java",
+//         coin: 20
+//     },
+//     {
+//         id: 4,
+//         name: "NodeJS",
+//         coin: 5
+//     }
+//     , {
+//         id: 5,
+//         name: "C++",
+//         coin: 12
+//     }
+// ]
 
-var isFree = Courses.every(function (Course, index) {
-    return Course.coin != 0
-});
+// var isFree = Courses.every(function (Course, index) {
+//     return Course.coin != 0
+// });
 
-console.log(isFree)
+// console.log(isFree)
+
+
+/*
+54.
+Math Object
+
+- Math.PI
+- Math.Round()
+
+- Math.random() 
+
+- Math.floor()
+
+- Math.ceil()
+
+- Math.abs()
+
+- Math.min()
+
+- Math.max()
+
+*/
+
+console.log(Math.floor(Math.random()*10));

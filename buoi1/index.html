@@ -3,12 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learning Java Script</title>
+    <title>Click to Reveal a Surprise!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #1e1e2e;
+            color: white;
+            transition: background-color 0.5s;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-top: 20px;
+        }
+        button {
+            background: linear-gradient(45deg, #ff007f, #ff7700);
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            color: white;
+            cursor: pointer;
+            border-radius: 8px;
+            margin-top: 20px;
+            transition: transform 0.2s, box-shadow 0.3s;
+        }
+        button:hover {
+            transform: scale(1.1);
+            box-shadow: 0px 4px 15px rgba(255, 75, 43, 0.4);
+        }
+        .surprise {
+            font-size: 2em;
+            margin-top: 20px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            transform: translateY(20px);
+        }
+        .show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello, World!</h1>
-    <p>This is a simple JavaScript program.</p>
-    <script src="main.js"></script>
-<button>click to here for nothing</button>
+    <h1>🎉 Click to Reveal a Surprise! 🎉</h1>
+    <button id="clickButton">Click Me!</button>
+    <div id="surpriseContainer"></div>
+
+    <script>
+        const surprises = [
+            "🎈 A balloon appears!",
+            "🚀 A rocket is launching!",
+            "🌟 You found a star!",
+            "🎸 Rock and roll!",
+            "🐱 A cute cat appears!",
+            "<img src='https://cdn.mypet.com.vn/uploads/photos/2024/07/mypet_33a2a4fe2c203e299c9bd474d7c004db.png' alt='Random Cat'>",
+            "<img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSVQmea9DD9tCK9tnDcSxGwzyn8-cVXs1Ovw&s' alt='Random Dog'>"
+        ];
+
+        document.getElementById("clickButton").addEventListener("click", function() {
+            const container = document.getElementById("surpriseContainer");
+
+            // Xóa phần tử cũ nếu có
+            container.innerHTML = "";
+
+            // Tạo phần tử mới
+            const newElement = document.createElement("div");
+            newElement.classList.add("surprise", "show");
+            newElement.innerHTML = surprises[Math.floor(Math.random() * surprises.length)];
+
+            container.appendChild(newElement);
+            document.body.style.backgroundColor = getRandomColor();
+        });
+
+        function getRandomColor() {
+            return `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
+        }
+    </script>
 </body>
 </html>
