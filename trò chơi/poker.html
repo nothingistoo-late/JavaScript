@@ -82,9 +82,6 @@
                 aiHand = deck.splice(0, 2);
             } else if (phase == 1) {
                 communityCards = deck.splice(0, 3);
-                console.log(communityCards);
-                console.log(playerHand);
-                console.log(aiHand);
             } else if (phase < 4) {
                 communityCards.push(deck.shift());
             }
@@ -106,8 +103,9 @@
             let counts = countValues(values);
 
             let pair = Object.keys(counts).find(v => counts[v] === 2);
-            return pair ? cardValueToNumber(pair) : null;
+            return pair ? cardValueToNumber(pair) : 0; // Trả về 0 thay vì null
         }
+
         function getTwoPairValue(cards) {
             let values = getCardValues(cards);
             let counts = countValues(values);
@@ -116,22 +114,24 @@
                 .map(v => cardValueToNumber(v))
                 .sort((a, b) => b - a);
 
-            return pairs.length >= 2 ? pairs.slice(0, 2) : null;
+            return pairs.length >= 2 ? pairs.slice(0, 2) : []; // Trả về [] thay vì null
         }
+
         function getThreeOfAKindValue(cards) {
             let values = getCardValues(cards);
             let counts = countValues(values);
 
             let threeKind = Object.keys(counts).find(v => counts[v] === 3);
-            return threeKind ? cardValueToNumber(threeKind) : null;
-        }
-        function getFlushValue(cards) {
-            let flushCards = getFlushCards(cards);
-            return flushCards ? getHighestCards(flushCards) : null;
+            return threeKind ? cardValueToNumber(threeKind) : 0; // Trả về 0 thay vì null
         }
         function getHighCardValue(cards) {
             return getHighestCards(cards);
         }
+        function getFlushValue(cards) {
+            let flushCards = getFlushCards(cards);
+            return flushCards && flushCards.length > 0 ? getHighestCards(flushCards) : []; // Kiểm tra null
+        }
+
         function getFlushCards(cards) {
             if (!Array.isArray(cards)) {
                 throw new Error("cards must be an array");
@@ -207,13 +207,6 @@
 
             return pairs.length >= 2 ? pairs.slice(0, 2) : null;
         }
-        function getPairValue(cards) {
-            let values = getCardValues(cards);
-            let counts = countValues(values);
-
-            let pair = Object.keys(counts).find(v => counts[v] === 2);
-            return pair ? cardValueToNumber(pair) : null;
-        }
 
         function getCardSuits(cards) {
             return cards.map(card => card.suit);
@@ -271,8 +264,6 @@
             }
             return false;
         }
-
-
 
         function hasFlush(cards) {
             let suitCounts = cards.reduce((acc, card) => {
@@ -341,7 +332,7 @@
             // if (!Array.isArray(cards)) {
             //     throw new Error("cards must be an array");
             // }
-            if (!Array.isArray(cards)) 
+            if (!Array.isArray(cards))
                 return;
             let valuesMap = {
                 '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8,
@@ -362,6 +353,15 @@
             let playerValues = valueFunction(playerCards);
             let aiValues = valueFunction(aiCards);
 
+            // Kiểm tra nếu giá trị null hoặc undefined
+            if (!playerValues || !aiValues) return "Invalid input!";
+
+            // Kiểm tra nếu không phải mảng
+            if (!Array.isArray(playerValues) || !Array.isArray(aiValues)) return "Invalid data format!";
+
+            // Kiểm tra nếu mảng có độ dài khác nhau
+            if (playerValues.length !== aiValues.length) return "Invalid comparison!";
+
             for (let i = 0; i < playerValues.length; i++) {
                 if (playerValues[i] > aiValues[i]) return "Player Wins!";
                 if (playerValues[i] < aiValues[i]) return "AI Wins!";
@@ -369,6 +369,7 @@
 
             return "It's a Tie!";
         }
+
         function compareHands(playerHand, aiHand) {
             switch (playerHand.rank) {
                 case 9: // Thùng phá sảnh
