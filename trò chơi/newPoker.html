@@ -77,21 +77,43 @@
         }
 
         function dealCards() {
-            if (phase === 0) {
-                playerHand = deck.splice(0, 2);
-                aiHand = deck.splice(0, 2);
-            } else if (phase == 1) {
-                communityCards = deck.splice(0, 3);
-            } else if (phase < 4) {
-                communityCards.push(deck.shift());
-            }
-            phase++;
-            updateDisplay();
-            if (communityCards.length + 2 >= 5) {
-                calculateWinRate();
+            if (deck.length === 0) {
+                console.log("Deck is empty! Cannot deal more cards.");
+                return;
             }
 
+            switch (phase) {
+                case 0:
+                    // Chia bài tẩy cho người chơi và AI
+                    playerHand = deck.splice(0, 2);
+                    aiHand = deck.splice(0, 2);
+                    break;
+                case 1:
+                    // Flop: Chia 3 lá bài chung đầu tiên
+                    communityCards = deck.splice(0, 3);
+                    break;
+                case 2:
+                    // Turn: Chia 1 lá bài chung thứ tư
+                    communityCards.push(deck.shift());
+                    break;
+                case 3:
+                    // River: Chia 1 lá bài chung thứ năm
+                    communityCards.push(deck.shift());
+                    break;
+                default:
+                    console.log("All cards have been dealt.");
+                    return;
+            }
+
+            phase++;
+            updateDisplay();
+
+            // Khi có ít nhất 5 lá trên bàn + 2 lá trên tay
+            if (communityCards.length >= 3) {
+                calculateWinRate();
+            }
         }
+
 
         function updateDisplay() {
             document.getElementById("player-hand").innerHTML = playerHand.map(card => `<div class='card'>${card.value}${card.suit}</div>`).join('');
@@ -158,7 +180,6 @@
             return Object.values(suitCounts).some(count => count >= 5);
         }
 
-
         function hasStraight(cards) {
             let valuesMap = {
                 '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8,
@@ -212,6 +233,81 @@
             return hasFlush(cards) && hasStraight(cards);
         }
 
+        function getHighCard(cards) {
+            return cards.sort((a, b) => getCardValue(b) - getCardValue(a)).slice(0, 5);
+        }
+
+        function getOnePair(cards) {
+            let values = getCardValues(cards);
+            let pairValue = values.find(val => values.filter(v => v === val).length === 2);
+            let pairCards = cards.filter(c => getCardValue(c) === pairValue).slice(0, 2);
+            let kickers = cards.filter(c => getCardValue(c) !== pairValue)
+                .sort((a, b) => getCardValue(b) - getCardValue(a))
+                .slice(0, 3);  // Lấy 3 lá cao nhất
+            return [...pairCards, ...kickers];
+        }
+
+        function getTwoPair(cards) {
+            let values = getCardValues(cards);
+            let pairs = [...new Set(values.filter(val => values.filter(v => v === val).length === 2))].sort((a, b) => b - a);
+
+            if (pairs.length < 2) return null; // Không có đủ 2 đôi
+
+            let pair1Cards = cards.filter(c => getCardValue(c) === pairs[0]).slice(0, 2);
+            let pair2Cards = cards.filter(c => getCardValue(c) === pairs[1]).slice(0, 2);
+
+            let kicker = cards.filter(c => getCardValue(c) !== pairs[0] && getCardValue(c) !== pairs[1])
+                .sort((a, b) => getCardValue(b) - getCardValue(a))[0]; // Lấy lá cao nhất
+
+            return [...pair1Cards, ...pair2Cards, kicker];
+        }
+
+        function getThreeOfAKind(cards) {
+            let values = getCardValues(cards);
+            let threeValue = values.find(val => values.filter(v => v === val).length === 3);
+            let threeCards = cards.filter(c => getCardValue(c) === threeValue).slice(0, 3);
+            let kickers = cards.filter(c => getCardValue(c) !== threeValue)
+                .sort((a, b) => getCardValue(b) - getCardValue(a))
+                .slice(0, 2);  // Lấy 2 lá cao nhất
+            return [...threeCards, ...kickers];
+        }
+
+        function getStraight(cards) {
+            let values = [...new Set(getCardValues(cards))].sort((a, b) => b - a);
+            for (let i = 0; i <= values.length - 5; i++) {
+                if (values[i] - values[i + 4] === 4) {
+                    let straightValues = values.slice(i, i + 5);
+                    return cards.filter(c => straightValues.includes(getCardValue(c))).slice(0, 5);
+                }
+            }
+            return [];
+        }
+
+        function getFlush(cards) {
+            let flushSuit = cards.find(c => cards.filter(cc => cc.suit === c.suit).length >= 5).suit;
+            return cards.filter(c => c.suit === flushSuit).slice(0, 5);
+        }
+
+        function getFullHouse(cards) {
+            let threeCards = getThreeOfAKind(cards);
+            let remainingCards = cards.filter(c => !threeCards.includes(c));
+            let pairCards = getOnePair(remainingCards);
+            return [...threeCards.slice(0, 3), ...pairCards.slice(0, 2)];
+        }
+
+        function getFourOfAKind(cards) {
+            let values = getCardValues(cards);
+            let fourValue = values.find(val => values.filter(v => v === val).length === 4);
+            let fourCards = cards.filter(c => getCardValue(c) === fourValue).slice(0, 4);
+            let kicker = cards.filter(c => getCardValue(c) !== fourValue)
+                .sort((a, b) => getCardValue(b) - getCardValue(a))[0];  // Lấy 1 lá cao nhất
+            return [...fourCards, kicker];
+        }
+
+        function getStraightFlush(cards) {
+            return getStraight(cards).filter(c => isSameSuit(cards, c.suit));
+        }
+
         function evaluateHand(cards) {
             if (hasStraightFlush(cards)) return { rank: 8, name: "Straight Flush" };
             if (hasFourOfAKind(cards)) return { rank: 7, name: "Four of a Kind" };
@@ -222,6 +318,53 @@
             if (hasTwoPair(cards)) return { rank: 2, name: "Two Pair" };
             if (hasPair(cards)) return { rank: 1, name: "One Pair" };
             return { rank: 0, name: "High Card" };
+        }
+        function getCardValue(card) {
+            let rank = card.value; // Giả sử card có thuộc tính rank: "A", "K", "Q", ..., "2"
+            const values = {
+                "A": 14, // Ace có giá trị cao nhất
+                "K": 13,
+                "Q": 12,
+                "J": 11,
+                "10": 10,
+                "9": 9,
+                "8": 8,
+                "7": 7,
+                "6": 6,
+                "5": 5,
+                "4": 4,
+                "3": 3,
+                "2": 2
+            };
+
+            return values[rank] || parseInt(rank); // Trả về số nếu không phải J, Q, K, A
+        }
+
+        function getBestHand(cards) {
+            // Sắp xếp bài theo giá trị từ cao xuống thấp
+            cards.sort((a, b) => getCardValue(b) - getCardValue(a));
+
+            // Kiểm tra từng bộ từ mạnh đến yếu
+            if (hasStraightFlush(cards)) return getStraightFlush(cards);
+            if (hasFourOfAKind(cards)) return getFourOfAKind(cards);
+            if (hasFullHouse(cards)) return getFullHouse(cards);
+            if (hasFlush(cards)) return getFlush(cards);
+            if (hasStraight(cards)) return getStraight(cards);
+            if (hasThreeOfAKind(cards)) return getThreeOfAKind(cards);
+            if (hasTwoPair(cards)) return getTwoPair(cards);
+            if (hasPair(cards)) return getOnePair(cards);
+            return getHighCard(cards); // Nếu không có gì thì lấy bài cao nhất
+        }
+
+        function compareHands(hand1, hand2) {
+            for (let i = 0; i < 5; i++) {
+                let value1 = getCardValue(hand1[i]);
+                let value2 = getCardValue(hand2[i]);
+
+                if (value1 > value2) return 1;  // hand1 thắng
+                if (value1 < value2) return -1; // hand2 thắng
+            }
+            return 0; // Hòa
         }
 
         function calculateWinRate() {
@@ -234,7 +377,6 @@
             console.log("player hand := " + playerBestHand.map(card => card.value + card.suit).join(", "));
             console.log("ai hand := " + aiBestHand.map(card => card.value + card.suit).join(", "));
 
-
             let winRate = 50;
             let resultText = "";
 
@@ -245,21 +387,18 @@
                 winRate = 0;
                 resultText = `AI Wins with ${aiRank.name}!`;
             } else {
-                // Nếu cùng rank, so sánh giá trị bài
-                // const comparison = compareHands(playerBestHand, aiBestHand);
-                // if (comparison > 0) {
-                //     winRate = 100;
-                //     resultText = `You Win with ${playerBestHand.name}!`;
-                // } else if (comparison < 0) {
-                //     winRate = 0;
-                //     resultText = `AI Wins with ${aiBestHand.name}!`;
-                // } else {
-                //     resultText = "It's a Tie!";
-                // }
-                winRate = 50;
-                resultText = "Tie";
+                if (compareHands(getBestHand(playerBestHand), getBestHand(aiBestHand)) === 0) {
+                    winRate = 50;
+                    resultText = "Tie";
+                } else if (compareHands(getBestHand(playerBestHand), getBestHand(playerBestHand)) === 1) {
+                    winRate = 100;
+                    resultText = `You Win with Higher ${playerRank.name}!`;
+                } else {
+                    winRate = 0;
+                    resultText = `AI Wins with Higher ${aiRank.name}!`;
+                }
             }
-            document.getElementById("win-rate").innerText = `Win Rate: ${winRate}%`;
+            document.getElementById("win-rate").innerText = `Win Rate Now: ${winRate}%`;
             document.getElementById("best-hand").innerText = `Your Best Hand: ${playerRank.name} | AI Best Hand: ${aiRank.name}`;
             document.getElementById("result").innerText = resultText;
         }
