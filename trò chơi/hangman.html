@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangman Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .word {
+            font-size: 2rem;
+            letter-spacing: 10px;
+        }
+
+        .incorrect {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Hangman Game</h1>
+    <p class="word" id="wordDisplay">_ _ _ _ _</p>
+    <input type="text" id="letterInput" maxlength="1">
+    <button onclick="guessLetter()">Guess</button>
+    <p>Wrong guesses: <span id="wrongGuesses" class="incorrect">0</span>/6</p>
+    <p id="message"></p>
+    <button onclick="resetGame()">Restart</button>
+
+    <script>
+        const words = ["banana", "apple", "grape", "orange", "mango"];
+        let chosenWord, displayedWord, wrongGuesses;
+
+        function initGame() {
+            chosenWord = words[Math.floor(Math.random() * words.length)];
+            displayedWord = "_ ".repeat(chosenWord.length).trim();
+            wrongGuesses = 0;
+            document.getElementById("wordDisplay").innerText = displayedWord;
+            document.getElementById("wrongGuesses").innerText = wrongGuesses;
+            document.getElementById("message").innerText = "";
+        }
+
+        async function getRandomWord() {
+            try {
+                const response = await fetch("https://random-word-api.herokuapp.com/word?number=1");
+                const data = await response.json();
+                return data[0]; // API trả về mảng, lấy phần tử đầu tiên
+            } catch (error) {
+                console.error("Error fetching word:", error);
+                return "default"; // Phòng khi API lỗi
+            }
+        }
+
+        // Gọi hàm và log kết quả
+        getRandomWord().then(word => console.log("Random word:", word));
+
+
+        function guessLetter() {
+            let input = document.getElementById("letterInput").value.toLowerCase();
+            if (!input.match(/[a-z]/) || input.length !== 1) return;
+
+            let newDisplay = "";
+            let correctGuess = false;
+            for (let i = 0; i < chosenWord.length; i++) {
+                if (chosenWord[i] === input) {
+                    newDisplay += input + " ";
+                    correctGuess = true;
+                } else {
+                    newDisplay += displayedWord[i * 2] + " ";
+                }
+            }
+            displayedWord = newDisplay.trim();
+            document.getElementById("wordDisplay").innerText = displayedWord;
+
+            if (!correctGuess) {
+                wrongGuesses++;
+                document.getElementById("wrongGuesses").innerText = wrongGuesses;
+            }
+
+            checkGameStatus();
+        }
+
+        function checkGameStatus() {
+            if (!displayedWord.includes("_")) {
+                document.getElementById("message").innerText = "You win! 🎉";
+            } else if (wrongGuesses >= 6) {
+                document.getElementById("message").innerText = "Game Over! The word was " + chosenWord;
+            }
+        }
+
+        function resetGame() {
+            initGame();
+        }
+
+        initGame();
+    </script>
+</body>
+
+</html>
