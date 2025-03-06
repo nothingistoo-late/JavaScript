@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatbox</title>
+    <link rel="stylesheet" href="style.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -65,28 +66,32 @@
             transition: 0.3s;
             font-size: 16px;
         }
+        .chat-input button:hover {
+            background: linear-gradient(135deg, #0056b3, #004299);
+        }
         .message {
             max-width: 75%;
             padding: 12px 16px;
             margin: 8px 0;
+            border-radius: 20px;
             font-size: 16px;
             word-wrap: break-word;
             display: inline-block;
+            opacity: 1;
         }
         .user-message {
             background: #007bff;
             color: white;
             align-self: flex-end;
             text-align: right;
-            border-radius: 18px 18px 0 18px;
         }
         .bot-message {
             background: #ddd;
             color: black;
             align-self: flex-start;
             text-align: left;
-            border-radius: 18px 18px 18px 0;
         }
+        /* Hiệu ứng đang nhập */
         .typing-indicator {
             display: flex;
             align-items: center;
@@ -106,8 +111,12 @@
             display: inline-block;
             animation: typing 1.5s infinite ease-in-out;
         }
-        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
         @keyframes typing {
             0% { opacity: 0.3; transform: translateY(0px); }
             50% { opacity: 1; transform: translateY(-5px); }
@@ -124,58 +133,73 @@
             <button onclick="sendMessage()">Gửi</button>
         </div>
     </div>
+
     <script>
-        document.getElementById("userInput").addEventListener("keydown", function (event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                sendMessage();
-            }
+        document.addEventListener("DOMContentLoaded", function () {
+            let inputField = document.getElementById("userInput");
+            inputField.addEventListener("keydown", function (event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    sendMessage();
+                }
+            });
         });
-        
+
         async function sendMessage() {
             let inputField = document.getElementById("userInput");
             let chatBox = document.getElementById("chatBox");
             let message = inputField.value.trim();
+
             if (!message) return;
 
+            // Hiển thị tin nhắn của user
             chatBox.innerHTML += `<p class="message user-message">${message}</p>`;
             inputField.value = "";
-            inputField.focus();
             chatBox.scrollTop = chatBox.scrollHeight;
-            
+
+            // Thêm hiệu ứng "đang nhập..."
             let typingIndicator = document.createElement("div");
             typingIndicator.classList.add("typing-indicator");
             typingIndicator.innerHTML = `<span></span><span></span><span></span>`;
             chatBox.appendChild(typingIndicator);
             chatBox.scrollTop = chatBox.scrollHeight;
-            
+
             try {
-                let response = await fetch("http://localhost:5001/api/chat", {
+                let response = await fetch("https://localhost:5001/api/chat", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ message })
+                    body: JSON.stringify({ message: message })
                 });
-                if (!response.ok) throw new Error("Lỗi API!");
+
+                if (!response.ok) throw new Error("Lỗi khi gọi API!");
+
                 let data = await response.json();
-                if (!data || !data.reply) throw new Error("Dữ liệu không hợp lệ!");
-                if (chatBox.contains(typingIndicator)) chatBox.removeChild(typingIndicator);
-                
+                if (!data || !data.reply) throw new Error("Dữ liệu trả về không hợp lệ!");
+
+                // Xóa hiệu ứng "đang nhập..."
+                chatBox.removeChild(typingIndicator);
+
+                // Hiện tin nhắn của bot từng ký tự một
                 let botMessage = document.createElement("p");
                 botMessage.classList.add("message", "bot-message");
                 chatBox.appendChild(botMessage);
+                chatBox.scrollTop = chatBox.scrollHeight;
+                
                 typeMessage(botMessage, data.reply);
             } catch (error) {
-                console.error(error);
-                if (chatBox.contains(typingIndicator)) chatBox.removeChild(typingIndicator);
-                chatBox.innerHTML += `<p class="message bot-message">Lỗi kết nối!</p>`;
+                console.error("Lỗi:", error);
+
+                // Xóa hiệu ứng "đang nhập..."
+                chatBox.removeChild(typingIndicator);
+
+                chatBox.innerHTML += `<p class="message bot-message">Không thể gửi tin nhắn.</p>`;
             }
         }
-        
+
         function typeMessage(element, text, index = 0) {
             if (index < text.length) {
                 element.innerHTML += text.charAt(index);
-                chatBox.scrollTop = chatBox.scrollHeight;
-                setTimeout(() => typeMessage(element, text, index + 1), 10);
+                setTimeout(() => typeMessage(element, text, index + 1), 20); // Tốc độ hiển thị chữ
             }
         }
     </script>
