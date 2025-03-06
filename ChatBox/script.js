@@ -1,32 +1,46 @@
-const apiUrl = "https://localhost:5001/api/chat";
+document.addEventListener("DOMContentLoaded", function () {
+    let inputField = document.getElementById("userInput");
+
+    // Lắng nghe sự kiện Enter để gửi tin nhắn
+    inputField.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault(); // Ngăn chặn xuống dòng
+            sendMessage();
+        }
+    });
+});
 
 async function sendMessage() {
-    const messageInput = document.getElementById("message");
-    const chatBox = document.getElementById("chat-box");
+    let inputField = document.getElementById("userInput");
+    let chatBox = document.getElementById("chatBox");
+    let message = inputField.value.trim();
 
-    if (messageInput.value.trim() === "") return;
+    if (!message) return;
 
-    chatBox.innerHTML += `<p><strong>Bạn:</strong> ${messageInput.value}</p>`;
+    // Hiển thị tin nhắn của người dùng
+    chatBox.innerHTML += `<p class="user-message">${message}</p>`;
+    inputField.value = "";
+    chatBox.scrollTop = chatBox.scrollHeight;
 
     try {
-        const response = await fetch(apiUrl, {
+        let response = await fetch("https://localhost:5001/api/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: messageInput.value })
+            body: JSON.stringify({ message: message })
         });
 
-        const data = await response.json();
-        console.log("Dữ liệu API trả về:", data); // Debug ở đây
+        if (!response.ok) throw new Error("Lỗi khi gọi API!");
 
-        if (!data || !data.reply) {
-            throw new Error("Dữ liệu trả về không hợp lệ!");
-        }
+        let data = await response.json();
 
-        chatBox.innerHTML += `<p><strong>Bot:</strong> ${data.reply}</p>`;
+        if (!data || !data.reply) throw new Error("Dữ liệu trả về không hợp lệ!");
+
+        // Hiển thị tin nhắn từ bot
+        chatBox.innerHTML += `<p class="bot-message">${data.reply}</p>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+
     } catch (error) {
         console.error("Lỗi:", error);
-        chatBox.innerHTML += `<p style="color:red;">Lỗi: ${error.message}</p>`;
+        chatBox.innerHTML += `<p class="bot-message">Không thể gửi tin nhắn.</p>`;
     }
-
-    messageInput.value = "";
 }
