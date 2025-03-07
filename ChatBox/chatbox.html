@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,14 +8,17 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="chat-container">
+    <div class="chat-bubble" onclick="toggleChat()">💬</div>
+    <div class="chat-container" id="chatContainer">
         <div class="chat-header">Chatbot</div>
-        <div class="chat-box" id="chatBox"></div>
+        <div class="chat-box" id="chatBox">
+        </div>
+        <p class="typing-indicator" id="typingIndicator">   Đang nhập</p>
         <div class="chat-input">
             <input type="text" id="userInput" placeholder="Nhập tin nhắn..." />
             <button onclick="sendMessage()">Gửi</button>
         </div>
     </div>
-    <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
