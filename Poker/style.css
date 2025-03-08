@@ -1,10 +1,10 @@
 body {
-    /* background-image: url("https://images2.alphacoders.com/107/1070222.jpg");
+    /* background-image: url("https://images2.alphacoders.com/107/1070222.jpg"); */
     background-size: cover; /* Phủ kín toàn bộ */
     background-position: center;
     font-family: Arial, sans-serif;
     text-align: center;
-    /* color: red; */
+    /* color: blue;  */
 }
 
 .card-container {
