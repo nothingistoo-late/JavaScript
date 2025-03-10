@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
             background-color: #f4f4f4;
             padding: 20px;
         }
+
         .container {
             max-width: 600px;
             margin: auto;
@@ -19,12 +21,14 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
         button {
             padding: 10px 20px;
             margin: 10px;
             font-size: 16px;
             cursor: pointer;
         }
+
         #result {
             margin-top: 20px;
             font-size: 18px;
@@ -33,27 +37,37 @@
             flex-wrap: wrap;
             justify-content: center;
         }
+
         .rare {
             color: red;
             font-size: 20px;
             animation: glow 1s infinite alternate;
         }
+
         @keyframes glow {
-            from { text-shadow: 0 0 5px red; }
-            to { text-shadow: 0 0 20px gold; }
+            from {
+                text-shadow: 0 0 5px red;
+            }
+
+            to {
+                text-shadow: 0 0 20px gold;
+            }
         }
+
         .bag {
             display: flex;
             flex-direction: column;
             align-items: center;
             margin: 10px;
         }
+
         .bag-image {
             width: 100px;
             height: auto;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>Bốc Túi Mù</h1>
@@ -72,7 +86,7 @@
             "Superior": "https://bizweb.dktcdn.net/thumb/1024x1024/100/427/145/products/baby-three-v3-zodiac-12-con-giap-4-2b5b2a52-e47e-479a-8b6d-10a2bf1182a9.jpg?v=1729822096010",
             "Thường": "https://sieuthidaisymart.com/wp-content/uploads/2024/11/Tui-mu-Baby-Three-dau-to-Baby-Three-Big-head-8.jpg"
         };
-        
+
         let bagList = [];
         bagList.push("Secret");
         bagList.push("Premium", "Premium");
@@ -85,7 +99,7 @@
             let quantity = parseInt(document.getElementById("quantity").value);
             let resultDiv = document.getElementById("result");
             resultDiv.innerHTML = "";
-            
+
             let selectedBags = [];
             for (let i = 0; i < quantity; i++) {
                 let pickedBag = bagList[Math.floor(Math.random() * bagList.length)];
@@ -93,7 +107,7 @@
             }
 
             selectedBags.sort((a, b) => (a === "Thường" ? 1 : -1));
-            
+
             selectedBags.forEach(pickedBag => {
                 let bagClass = (pickedBag !== "Thường") ? "rare" : "";
                 let bagImage = `<img src="${bags[pickedBag]}" class="bag-image">`;
@@ -103,4 +117,5 @@
         }
     </script>
 </body>
+
 </html>
