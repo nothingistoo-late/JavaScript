@@ -1,97 +1,20 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Làm ny tui nha ❤️</title>
-    <style>
-        body {
-            text-align: center;
-            font-family: Arial, sans-serif;
-            background-color: #ffcccc;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        h1 {
-            font-size: 40px;
-            color: #ff0000;
-        }
-        .buttons {
-            margin-top: 20px;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            width: 300px;
-            height: 100px;
-        }
-        button {
-            font-size: 24px;
-            padding: 15px 30px;
-            margin: 10px;
-            border: none;
-            cursor: pointer;
-            border-radius: 10px;
-            transition: transform 0.3s ease-out, font-size 0.3s ease-in-out;
-            position: absolute;
-        }
-        #yes {
-            background-color: #ff4d4d;
-            color: white;
-            left: 0;
-        }
-        #no {
-            background-color: #333;
-            color: white;
-            right: 0;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <h1>Làm ny tui nha ❤️</h1>
     <div class="buttons">
         <button id="yes" onclick="alert('Yayyy! Iu bạn nhìu ❤️')">Yes</button>
         <button id="no">No</button>
     </div>
-    
-    <script>
-        const noButton = document.getElementById('no');
-        const yesButton = document.getElementById('yes');
-        let yesSize = 24;
-        let offsetX = 0, offsetY = 0;
-
-        noButton.addEventListener('mousemove', function(event) {
-            const rect = this.getBoundingClientRect();
-            const mouseX = event.clientX;
-            const mouseY = event.clientY;
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            
-            const deltaX = mouseX - centerX;
-            const deltaY = mouseY - centerY;
-            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-            
-            if (distance < 100) {
-                const moveX = (deltaX / distance) * 200;
-                const moveY = (deltaY / distance) * 200;
-                offsetX += moveX;
-                offsetY += moveY;
-                
-                this.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-            }
-        });
-        
-        noButton.addEventListener('click', function() {
-            yesSize += 10;
-            if (yesSize > window.innerWidth) {
-                yesSize = window.innerWidth - 20;
-            }
-            yesButton.style.fontSize = `${yesSize}px`;
-            yesButton.style.padding = `${yesSize / 4}px ${yesSize / 2}px`;
-        });
-    </script>
+<script src="script.js" ></script>
 </body>
+
 </html>
