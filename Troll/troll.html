@@ -17,14 +17,16 @@
         }
         .buttons {
             margin-top: 50px;
+            position: relative;
         }
         button {
-            font-size: 20px;
-            padding: 10px 20px;
+            font-size: 24px;
+            padding: 15px 30px;
             margin: 10px;
             border: none;
             cursor: pointer;
             border-radius: 10px;
+            transition: transform 0.3s ease-in-out;
         }
         #yes {
             background-color: #ff4d4d;
@@ -45,11 +47,14 @@
     </div>
     
     <script>
+        const noButton = document.getElementById('no');
+        noButton.style.left = "50%";
+        noButton.style.top = "50%";
+        
         document.getElementById('no').addEventListener('mouseenter', function() {
-            let x = Math.random() * (window.innerWidth - this.offsetWidth);
-            let y = Math.random() * (window.innerHeight - this.offsetHeight);
-            this.style.left = x + 'px';
-            this.style.top = y + 'px';
+            let x = Math.random() * 200 - 100; // Dịch chuyển trong khoảng -100px đến 100px
+            let y = Math.random() * 200 - 100;
+            this.style.transform = `translate(${x}px, ${y}px)`;
         });
     </script>
 </body>
