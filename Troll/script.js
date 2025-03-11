@@ -33,12 +33,12 @@ noButton.addEventListener('click', function () {
     yesButton.style.padding = `${yesSize / 4}px ${yesSize / 2}px`;
 });
 document.getElementById("yes").addEventListener("click", function () {
-    alert("Yayyy! Iu bạn nhìu ❤️");
-    celebrate();
+    document.getElementById("popup").style.display = "block";
+    celebrate(); // Gọi hiệu ứng ăn mừng
 });
 
 function celebrate() {
-    const duration = 3 * 1000; // 3 giây
+    const duration = 3 * 1000;
     const animationEnd = Date.now() + duration;
     const colors = ["#ff0000", "#ff8000", "#ffff00", "#00ff00", "#00ffff", "#0000ff", "#8000ff"];
 
