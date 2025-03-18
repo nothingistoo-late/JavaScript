@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048 - Tỏ Tình Edition 💖</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #faf8ef;
+        }
+        h1 {
+            color: #776e65;
+        }
+        #game-container {
+            display: inline-block;
+            background: #bbada0;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            position: relative;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 80px);
+            grid-template-rows: repeat(4, 80px);
+            gap: 10px;
+            background: #cdc1b4;
+            padding: 10px;
+            border-radius: 10px;
+            position: relative;
+        }
+        .tile {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            background: #eee4da;
+            border-radius: 5px;
+            transition: transform 0.2s ease-in-out;
+        }
+        .merged {
+            animation: pop 0.2s ease-in-out;
+        }
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <h1>2048 - Phiên bản tỏ tình 💖</h1>
+    <div id="game-container">
+        <div class="grid" id="grid"></div>
+    </div>
+    <p><b>Dùng phím mũi tên để chơi</b></p>
+    
+    <script>
+        const gridSize = 4;
+        let grid = Array(gridSize).fill().map(() => Array(gridSize).fill(0));
+        let tileElements = {};
+
+        function initGame() {
+            addRandomTile();
+            addRandomTile();
+            renderGrid();
+        }
+
+        function addRandomTile() {
+            let emptyCells = [];
+            for (let r = 0; r < gridSize; r++) {
+                for (let c = 0; c < gridSize; c++) {
+                    if (grid[r][c] === 0) {
+                        emptyCells.push({ r, c });
+                    }
+                }
+            }
+            if (emptyCells.length > 0) {
+                let { r, c } = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                grid[r][c] = Math.random() > 0.1 ? 2 : 4;
+                createTile(r, c, grid[r][c]);
+            }
+        }
+
+        function createTile(r, c, value) {
+            let tile = document.createElement("div");
+            tile.className = "tile";
+            tile.textContent = value;
+            tile.style.transform = `translate(${c * 90}px, ${r * 90}px)`;
+            tileElements[`${r}-${c}`] = tile;
+            document.getElementById("grid").appendChild(tile);
+        }
+
+        function moveGrid(dir) {
+            let moved = false;
+            let mergedTiles = new Set();
+            let newGrid = Array(gridSize).fill().map(() => Array(gridSize).fill(0));
+            let tileMoves = [];
+
+            let traverse = (r, c, dr, dc) => {
+                let value = grid[r][c];
+                if (value === 0) return;
+                
+                let newR = r, newC = c;
+                while (true) {
+                    let nextR = newR + dr, nextC = newC + dc;
+                    if (nextR < 0 || nextR >= gridSize || nextC < 0 || nextC >= gridSize) break;
+                    if (newGrid[nextR][nextC] === 0) {
+                        newR = nextR;
+                        newC = nextC;
+                    } else if (newGrid[nextR][nextC] === value && !mergedTiles.has(`${nextR}-${nextC}`)) {
+                        newR = nextR;
+                        newC = nextC;
+                        mergedTiles.add(`${nextR}-${nextC}`);
+                        break;
+                    } else {
+                        break;
+                    }
+                }
+                if (newR !== r || newC !== c) moved = true;
+                newGrid[newR][newC] = newGrid[newR][newC] ? newGrid[newR][newC] * 2 : value;
+                tileMoves.push({ fromR: r, fromC: c, toR: newR, toC: newC });
+            };
+            
+            let order = [...Array(gridSize).keys()];
+            if (dir === "right" || dir === "down") order.reverse();
+            let dr = { up: -1, down: 1, left: 0, right: 0 }[dir];
+            let dc = { up: 0, down: 0, left: -1, right: 1 }[dir];
+            
+            for (let r of order) {
+                for (let c of order) {
+                    if (grid[r][c] !== 0) traverse(r, c, dr, dc);
+                }
+            }
+            
+            if (moved) {
+                animateMove(tileMoves, () => {
+                    grid = newGrid;
+                    addRandomTile();
+                    renderGrid();
+                });
+            }
+        }
+
+        function animateMove(moves, callback) {
+            moves.forEach(({ fromR, fromC, toR, toC }) => {
+                let key = `${fromR}-${fromC}`;
+                if (tileElements[key]) {
+                    tileElements[key].style.transform = `translate(${toC * 90}px, ${toR * 90}px)`;
+                }
+            });
+            setTimeout(callback, 200);
+        }
+
+        function renderGrid() {
+            document.getElementById("grid").innerHTML = "";
+            tileElements = {};
+            for (let r = 0; r < gridSize; r++) {
+                for (let c = 0; c < gridSize; c++) {
+                    if (grid[r][c] !== 0) {
+                        createTile(r, c, grid[r][c]);
+                    }
+                }
+            }
+        }
+
+        document.addEventListener("keydown", (e) => {
+            if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) {
+                moveGrid(e.key.replace("Arrow", "").toLowerCase());
+            }
+        });
+
+        initGame();
+    </script>
+</body>
+</html>
