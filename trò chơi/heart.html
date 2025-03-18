@@ -51,7 +51,7 @@
         }
 
         .merged {
-            animation: pop 0.2s ease-in-out;
+            animation: pop 0.3s ease-in-out;
         }
 
         @keyframes pop {
@@ -60,12 +60,40 @@
             }
 
             50% {
-                transform: scale(1.2);
+                transform: scale(1.3);
             }
 
             100% {
                 transform: scale(1);
             }
+        }
+
+        #score {
+            font-size: 24px;
+            color: #776e65;
+            margin-top: 10px;
+        }
+
+        #leaderboard {
+            margin-top: 20px;
+            text-align: left;
+            display: inline-block;
+        }
+
+        #leaderboard h2 {
+            color: #776e65;
+        }
+
+        #leaderboard ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #leaderboard li {
+            background: #eee4da;
+            padding: 5px;
+            border-radius: 5px;
+            margin-bottom: 5px;
         }
     </style>
 </head>
@@ -76,16 +104,25 @@
         <div class="grid" id="grid"></div>
     </div>
     <p><b>Dùng phím mũi tên để chơi</b></p>
+    <div id="score">Score: 0</div>
+    <div id="leaderboard">
+        <h2>Leaderboard</h2>
+        <ul id="leaderboard-list"></ul>
+    </div>
 
     <script>
         const gridSize = 4;
         let grid = Array(gridSize).fill().map(() => Array(gridSize).fill(0));
         let tileElements = {};
+        let score = 0;
+        let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
 
         function initGame() {
             addRandomTile();
             addRandomTile();
             renderGrid();
+            updateScore(0);
+            renderLeaderboard();
         }
 
         function addRandomTile() {
@@ -104,9 +141,13 @@
             }
         }
 
-        function createTile(r, c, value) {
+        function createTile(r, c, value, isMerged = false) {
             let tile = document.createElement("div");
             tile.className = "tile";
+            if (isMerged) {
+                tile.classList.add("merged");
+                setTimeout(() => tile.classList.remove("merged"), 300); // Remove the class after the animation
+            }
             tile.textContent = value;
             tile.style.transform = `translate(${c * 90}px, ${r * 90}px)`;
             tileElements[`${r}-${c}`] = tile;
@@ -153,8 +194,13 @@
                     }
                 }
                 if (newR !== r || newC !== c) moved = true;
-                newGrid[newR][newC] = newGrid[newR][newC] ? newGrid[newR][newC] * 2 : value;
-                tileMoves.push({ fromR: r, fromC: c, toR: newR, toC: newC });
+                if (newGrid[newR][newC]) {
+                    newGrid[newR][newC] *= 2;
+                    updateScore(newGrid[newR][newC]);
+                } else {
+                    newGrid[newR][newC] = value;
+                }
+                tileMoves.push({ fromR: r, fromC: c, toR: newR, toC: newC, merged: newGrid[newR][newC] !== value });
             };
 
             let order = [...Array(gridSize).keys()];
@@ -176,16 +222,21 @@
                     if (isGameOver()) {
                         alert("Game Over! Em yêu, anh muốn nói rằng anh yêu em rất nhiều! 💖");
                         clearInterval(autoPlayInterval); // Stop auto-play when the game is over
+                        updateLeaderboard(score);
                     }
                 });
             }
         }
 
         function animateMove(moves, callback) {
-            moves.forEach(({ fromR, fromC, toR, toC }) => {
+            moves.forEach(({ fromR, fromC, toR, toC, merged }) => {
                 let key = `${fromR}-${fromC}`;
                 if (tileElements[key]) {
                     tileElements[key].style.transform = `translate(${toC * 90}px, ${toR * 90}px)`;
+                    if (merged) {
+                        tileElements[key].classList.add("merged");
+                        setTimeout(() => tileElements[key].classList.remove("merged"), 300); // Remove the class after the animation
+                    }
                 }
             });
             setTimeout(callback, 200);
@@ -201,6 +252,29 @@
                     }
                 }
             }
+        }
+
+        function updateScore(points) {
+            score += points;
+            document.getElementById("score").textContent = `Score: ${score}`;
+        }
+
+        function updateLeaderboard(newScore) {
+            leaderboard.push(newScore);
+            leaderboard.sort((a, b) => b - a);
+            leaderboard = leaderboard.slice(0, 5); // Keep only top 5 scores
+            localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+            renderLeaderboard();
+        }
+
+        function renderLeaderboard() {
+            const leaderboardList = document.getElementById("leaderboard-list");
+            leaderboardList.innerHTML = '';
+            leaderboard.forEach((score, index) => {
+                const li = document.createElement("li");
+                li.textContent = `${index + 1}. ${score}`;
+                leaderboardList.appendChild(li);
+            });
         }
 
         function autoPlay() {
@@ -219,6 +293,7 @@
 
         // Start auto-play
         const autoPlayInterval = setInterval(autoPlay, 1000); // Adjust the interval as needed
+
     </script>
 </body>
 
