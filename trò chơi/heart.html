@@ -112,71 +112,73 @@
             tileElements[`${r}-${c}`] = tile;
             document.getElementById("grid").appendChild(tile);
         }
-        function isGameOver() {
-            for (let r = 0; r < gridSize; r++) {
-                for (let c = 0; c < gridSize; c++) {
-                    if (grid[r][c] === 0) return false;
-                    if (r > 0 && grid[r][c] === grid[r - 1][c]) return false;
-                    if (r < gridSize - 1 && grid[r][c] === grid[r + 1][c]) return false;
-                    if (c > 0 && grid[r][c] === grid[r][c - 1]) return false;
-                    if (c < gridSize - 1 && grid[r][c] === grid[r][c + 1]) return false;
-                }
-            }
-            return true;
-        }
-        function moveGrid(dir) {
-            let moved = false;
-            let mergedTiles = new Set();
-            let newGrid = Array(gridSize).fill().map(() => Array(gridSize).fill(0));
-            let tileMoves = [];
-
-            let traverse = (r, c, dr, dc) => {
-                let value = grid[r][c];
-                if (value === 0) return;
-
-                let newR = r, newC = c;
-                while (true) {
-                    let nextR = newR + dr, nextC = newC + dc;
-                    if (nextR < 0 || nextR >= gridSize || nextC < 0 || nextC >= gridSize) break;
-                    if (newGrid[nextR][nextC] === 0) {
-                        newR = nextR;
-                        newC = nextC;
-                    } else if (newGrid[nextR][nextC] === value && !mergedTiles.has(`${nextR}-${nextC}`)) {
-                        newR = nextR;
-                        newC = nextC;
-                        mergedTiles.add(`${nextR}-${nextC}`);
-                        break;
-                    } else {
-                        break;
-                    }
-                }
-                if (newR !== r || newC !== c) moved = true;
-                newGrid[newR][newC] = newGrid[newR][newC] ? newGrid[newR][newC] * 2 : value;
-                tileMoves.push({ fromR: r, fromC: c, toR: newR, toC: newC });
-            };
-
-            let order = [...Array(gridSize).keys()];
-            if (dir === "right" || dir === "down") order.reverse();
-            let dr = { up: -1, down: 1, left: 0, right: 0 }[dir];
-            let dc = { up: 0, down: 0, left: -1, right: 1 }[dir];
-
-            for (let r of order) {
-                for (let c of order) {
-                    if (grid[r][c] !== 0) traverse(r, c, dr, dc);
-                }
-            }
-
-            if (moved) {
-                animateMove(tileMoves, () => {
-                    grid = newGrid;
-                    addRandomTile();
-                    renderGrid();
-                    if (isGameOver()) {
-                        alert("Game Over!");
-                    }
-                });
+        
+    function isGameOver() {
+        for (let r = 0; r < gridSize; r++) {
+            for (let c = 0; c < gridSize; c++) {
+                if (grid[r][c] === 0) return false;
+                if (r > 0 && grid[r][c] === grid[r - 1][c]) return false;
+                if (r < gridSize - 1 && grid[r][c] === grid[r + 1][c]) return false;
+                if (c > 0 && grid[r][c] === grid[r][c - 1]) return false;
+                if (c < gridSize - 1 && grid[r][c] === grid[r][c + 1]) return false;
             }
         }
+        return true;
+    }
+
+    function moveGrid(dir) {
+        let moved = false;
+        let mergedTiles = new Set();
+        let newGrid = Array(gridSize).fill().map(() => Array(gridSize).fill(0));
+        let tileMoves = [];
+
+        let traverse = (r, c, dr, dc) => {
+            let value = grid[r][c];
+            if (value === 0) return;
+            
+            let newR = r, newC = c;
+            while (true) {
+                let nextR = newR + dr, nextC = newC + dc;
+                if (nextR < 0 || nextR >= gridSize || nextC < 0 || nextC >= gridSize) break;
+                if (newGrid[nextR][nextC] === 0) {
+                    newR = nextR;
+                    newC = nextC;
+                } else if (newGrid[nextR][nextC] === value && !mergedTiles.has(`${nextR}-${nextC}`)) {
+                    newR = nextR;
+                    newC = nextC;
+                    mergedTiles.add(`${nextR}-${nextC}`);
+                    break;
+                } else {
+                    break;
+                }
+            }
+            if (newR !== r || newC !== c) moved = true;
+            newGrid[newR][newC] = newGrid[newR][newC] ? newGrid[newR][newC] * 2 : value;
+            tileMoves.push({ fromR: r, fromC: c, toR: newR, toC: newC });
+        };
+        
+        let order = [...Array(gridSize).keys()];
+        if (dir === "right" || dir === "down") order.reverse();
+        let dr = { up: -1, down: 1, left: 0, right: 0 }[dir];
+        let dc = { up: 0, down: 0, left: -1, right: 1 }[dir];
+        
+        for (let r of order) {
+            for (let c of order) {
+                if (grid[r][c] !== 0) traverse(r, c, dr, dc);
+            }
+        }
+        
+        if (moved) {
+            animateMove(tileMoves, () => {
+                grid = newGrid;
+                addRandomTile();
+                renderGrid();
+                if (isGameOver()) {
+                    alert("Game Over! Em yêu, anh muốn nói rằng anh yêu em rất nhiều! 💖");
+                }
+            });
+        }
+    }
 
         function animateMove(moves, callback) {
             moves.forEach(({ fromR, fromC, toR, toC }) => {
