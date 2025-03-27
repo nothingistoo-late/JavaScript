@@ -219,6 +219,8 @@
                     grid = newGrid;
                     addRandomTile();
                     renderGrid();
+                    clearInterval(autoPlayInterval); // Stop auto-play when the game is over
+
                     if (isGameOver()) {
                         alert("Game Over! Em yêu, anh muốn nói rằng anh yêu em rất nhiều! 💖");
                         clearInterval(autoPlayInterval); // Stop auto-play when the game is over
