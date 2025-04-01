@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genshin Impact Gacha</title>
+    <style>
+        body {
+            background: url('https://i.imgur.com/5YumvWf.jpg') no-repeat center center/cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: white;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        #gacha-container {
+            text-align: center;
+            position: relative;
+        }
+        .result-box {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="gacha-container">
+        <h1>Cầu Nguyện Genshin Impact</h1>
+        <button onclick="rollGacha(1)">Cầu Nguyện 1 Lần</button>
+        <button onclick="rollGacha(10)">Cầu Nguyện 10 Lần</button>
+        <div id="result"></div>
+    </div>
+    <div class="result-box" id="popup">
+        <h2 id="popup-text"></h2>
+        <button onclick="closePopup()">Đóng</button>
+    </div>
+    <audio id="gacha-sound" src="https://genshin-impact.fandom.com/wiki/Special:FilePath/Wish_SFX.mp3" preload="auto"></audio>
+    
+    <script>
+        const characters = [
+            { name: 'Diluc', rarity: 5, color: 'gold' },
+            { name: 'Keqing', rarity: 5, color: 'gold' },
+            { name: 'Mona', rarity: 5, color: 'gold' },
+            { name: 'Xiangling', rarity: 4, color: 'purple' },
+            { name: 'Sucrose', rarity: 4, color: 'purple' },
+            { name: 'Noelle', rarity: 4, color: 'purple' },
+            { name: 'Razor', rarity: 4, color: 'purple' },
+            { name: 'Debate Club', rarity: 3, color: 'blue' },
+            { name: 'Cool Steel', rarity: 3, color: 'blue' }
+        ];
+
+        let pity5 = 0;
+        let pity4 = 0;
+
+        function rollGacha(times) {
+            document.getElementById('gacha-sound').play();
+            let results = [];
+            for (let i = 0; i < times; i++) {
+                let roll = Math.random();
+                let rarity;
+                let effectColor;
+
+                pity5++;
+                pity4++;
+
+                if (pity5 >= 90 || roll < 0.006) {
+                    rarity = 5;
+                    effectColor = 'gold';
+                    pity5 = 0;
+                    pity4 = 0;
+                } else if (pity4 >= 10 || roll < 0.051) {
+                    rarity = 4;
+                    effectColor = 'purple';
+                    pity4 = 0;
+                } else {
+                    rarity = 3;
+                    effectColor = 'blue';
+                }
+
+                let selected = characters.filter(c => c.rarity === rarity);
+                let character = selected[Math.floor(Math.random() * selected.length)];
+                results.push(`<span style='color: ${effectColor}'>${character.name}</span>`);
+            }
+
+            document.getElementById('popup-text').innerHTML = results.join('<br>');
+            document.getElementById('popup').style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
