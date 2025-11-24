@@ -1,0 +1,32 @@
+/* App.css */
+.slider {
+  /* width: 100vw; */
+  /* height: 100vh; */
+  overflow: hidden;
+  display: flex;
+  align-items: center; /* căn giữa ảnh theo chiều dọc */
+  justify-content: flex-start; /* trượt từ trái sang phải */
+}
+
+.slides {
+  display: flex;
+  flex-wrap: nowrap;
+  animation: slide 25s linear infinite;
+}
+
+.slides img {
+  flex: 0 0 auto;   /* ảnh không bị co */
+  width: auto;      /* tự động theo tỉ lệ */
+  height: 80vh;     /* cao vừa phải, không full màn hình */
+  margin-right: 20px; /* khoảng cách giữa các ảnh */
+  object-fit: cover;  /* crop đẹp */
+}
+
+@keyframes slide {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
